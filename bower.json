@@ -1,0 +1,22 @@
+{
+  "name": "flask-boilerplate",
+  "authors": [
+    "Ernesto Ruge <mail@ernestoruge.de>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "BSD-3-Clause",
+  "homepage": "https://sectio-aurea.org",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3",
+    "react": "~15",
+    "fontawesome": "~4"
+  }
+}

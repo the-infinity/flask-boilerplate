@@ -1,0 +1,10 @@
+Flask
+Flask-Security
+Flask-Script
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Basicauth
+Flask-Cache
+Flask-Elasticsearch
+mysql-python
+python-memcached

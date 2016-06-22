@@ -1,0 +1,307 @@
+{% extends "layout.html" %}
+
+{% block scripts %}
+{{super()}}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1 data-host={{ ssl_test.Host.host }}>SSL-Check von {{ ssl_test.Host.host }}</h1>
+  </div>
+</div>
+<div class="container" id="result-box">
+{% include 'messages.html' %}
+  {% if (ssl_test.cert_matches and ssl_test.Host.type == '1') or (ssl_test.ssl_ok and ssl_test.Host.type == '2') %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} unterstützt SSL.</h2>
+      <p>Das ist gut. <a href="/info/encryption#why-ssl">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} unterstützt kein SSL.</h2>
+      <p>Das ist schlecht. <a href="/info/encryption#why-ssl">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if (ssl_test.cert_matches and ssl_test.Host.type == '1') or (ssl_test.ssl_ok and ssl_test.Host.type == '2') %}
+  {% if ssl_test.cert_matches == 0 %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} nutzt kein valides Zertifikat.</h2>
+      <p>Ein invalides Zertifikat erleichtert es Angreifern erheblich, MitM-Attacken zu fahren. <a href="/info/encryption#cert">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.ssl_forward == 1 %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} leitet auf die SSL-Seite weiter.</h2>
+      <p>Das ist gut. <a href="/info/encryption#hsts">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% elif ssl_test.ssl_forward == 0 %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} leitet nicht auf die SSL-Seite weiter.</h2>
+      <p>Um sicherzustellen, dass Nutzer auch die verschlüsselte Seite nutzen, ist eine 301er-Weiterleitung von http:// Requests auf https:// empfehlenswert <a href="/info/encryption#forward">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.sha1_cert %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} verwendet ein SHA1-Zertifikat.</h2>
+      <p>Ein Wechsel auf ein SHA2-Zertifikat ist erforderlich. <a href="/info/encryption#sha1">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} verwendet ein SHA2-Zertifikat.</h2>
+      <p>Das ist gut. <a href="/info/encryption#sha1">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.rc4_available %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet eine RC4-Cipher an.</h2>
+      <p>Da RC4 zu leicht geknackt werden kann, sollte diese Cipher nicht mehr eingesetzt werden. <a href="/info/encryption#rc4">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet keine RC4-Cipher an.</h2>
+      <p>Das ist gut. <a href="/info/encryption#rc4">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.md5_available %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet eine MD5-Cipher an.</h2>
+      <p>Da MD5 unerwünschte Kollisionen erzeugt kann, sollte dieser Hashalgorithmus nicht mehr eingesetzt werden. <a href="/info/encryption#md5">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet keine MD5-Cipher an.</h2>
+      <p>Das ist gut. <a href="/info/encryption#rc4">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.sslv3_available or ssl_test.sslv2_available %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet {% if ssl_test.sslv3_available and not ssl_test.sslv2_available %}SSLv3{% elif ssl_test.ssl2_available and not ssl_test.ssl3_available %}SSLv2{% else %}sowohl SSLv2 als auch SSLv3{% endif %} an.</h2>
+      <p>{% if ssl_test.sslv2_available %}SSL2 ist schon sehr lange vollständig geknackt.{% if ssl_test.sslv3_available %} {% endif %}{% endif %}{% if ssl_test.sslv3_available %}SSL3 ist seit der POODLE-Sicherheitslücke endgültig geknackt, daher sollte SSL3 nicht mehr angeboten werden.{% endif %} <a href="/info/encryption#ssl23">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet weder SSLv2 noch SSLv3 an.</h2>
+      <p>Das ist gut. <a href="/info/encryption#ssl23">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.pfs_available and (ssl_test.dhe_key or ssl_test.ecdhe_key) %}
+  {% if (ssl_test.dhe_key >= 2048 or ssl_test.dhe_key == None) and (ssl_test.ecdhe_key >= 256 or ssl_test.ecdhe_key == None) %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet sichere Perfect Forward Secrecy.</h2>
+      <p>Ein{% if ssl_test.ecdhe_key %} Elliptic Curve Diffie-Hellman-Schlüssel von {{ ssl_test.ecdhe_key }} Bit und ein{% endif %} Diffie-Hellman-Schlüssel von {{ ssl_test.dhe_key }} Bit ist nach dem heutigen Stand sicher. <a href="/info/encryption#pfs">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% elif ssl_test.dhe_key >= 1024 %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-circle-o"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet Perfect Forward Secrecy mit einem schwachen DH-Schlüssel.</h2>
+      <p>Ein DH-Schlüssel von {{ ssl_test.dhe_key }} Bit entspricht nicht dem Stand der Technik. <a href="/info/encryption#pfs">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet Forward Secrecy mit einem sehr schwachen DH-Schlüssel.</h2>
+      <p>Ein DH-Schlüssel von {{ ssl_test.dhe_key }} Bit ist sehr schlecht, da er sehr leicht zu knacken ist. <a href="/info/encryption#pfs">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet kein Perfect Forward Secrecy</h2>
+      <p>Dies sollte geändert werden. <a href="/info/encryption#pfs">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.fallback_scsv_available %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} beherrscht Fallback SCSV.</h2>
+      <p>Fallback SCSV verhindert, dass Angreifer die Kommunikation des Servers auf einen unsicheren Verschlüsselungsmechanismus absenken können. <a href="/info/encryption#scsv">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-circle-o"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} beherrscht kein Fallback SCSV</h2>
+      <p>Angreifer können ohne Fallback SCSV die Kommunikation des Servers auf einen unsicheren Verschlüsselungsmechanismus absenken. <a href="/info/encryption#scsv">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.Host.type == 1 %}
+  {% if ssl_test.hsts_available %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-plus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} sendet den HSTS-Header.</h2>
+      <p>Das ist gut. <a href="/info/encryption#hsts">Weitere Informationen.</a></p>
+    </div>
+  </div>{% else %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-circle-o"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} sendet nicht den HSTS-Header.</h2>
+      <p>HSTS eine gute Ergänzung, um zu verhindern, dass Angreifer den Client auf eine unverschlüsselte Verbindung zwingen. <a href="/info/encryption#hsts">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+  {% if ssl_test.ccs_injection %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} ist anfällig für eine CCS-Injection.</h2>
+      <p>Damit kann der Angreifer die Kommunikation auf eine schlechtere Verschlüsselung zwingen. <a href="/info/encryption#ccs">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if not ssl_test.session_renegotiation_secure %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} hat eine unsichere TLS-Renegotiation.</h2>
+      <p>Damit kann der Angreifer die Kommunikation auf eine schlechtere Verschlüsselung zwingen. <a href="/info/encryption#session-renegotiation">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.compression %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} bietet eine unsichere TLS Kompression an.</h2>
+      <p>Damit kann der Angreifer über die CRIME-Attacke Session-Hijacking betreiben. <a href="/info/encryption#crime">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.heartbleed %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} ist anfällig gegenüber der Heartbleed-Sicherheitslücke.</h2>
+      <p>Dieser SSL-Supergau ermöglicht es Angreifern, an den Private Key zu gelangen. <a href="/info/encryption#heartbleed">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% if ssl_test.export_cipher %}
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-minus-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h2>{{ ssl_test.Host.host }} unterstützt die unsicheren EXPORT-Cipher.</h2>
+      <p>Diese sind mit voller Absicht unsicher und sollten daher deaktiviert werden. <a href="/info/encryption#export">Weitere Informationen.</a></p>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+  <div class="row-fluid" style="padding-top: 50px;">
+    <div class="col-sm-2 col-rating">
+      <span class="fa fa-exclamation-circle"></span>
+    </div>
+    <div class="col-sm-10">
+      <h3 style="font-style: italic;">Fehler und Genauigkeit</h3>
+      <p style="font-style: italic;">Die Daten dieses Tests sind vom {{ ssl_test.created.strftime('%d.%m.%Y, %H:%M') }} Uhr. Es gibt etwa wöchentliche Tests.</p>
+      <p style="font-style: italic;">Bei automatisierten Tests wie diesem kann es z. B. durch fehlerhafte Server, sehr scharf eingestellte Firewalls oder Netzausfällen zu Fehlern kommen. Als Sekundärquelle lohnt sich ein Test <a href="https://www.ssllabs.com/ssltest/analyze.html?d={{ ssl_test.Host.host }}">auf SSL-Labs</a>. Wenn Sie einen Fehler finden, <a href="mailto:mail@ernestoruge.de">melden Sie ihn bitte</a>. Danke!</p>
+      {% if ssl_test.errors %}<p style="font-style: italic;">Folgende Fehler sind bei diesem Scanvorgang aufgetreten: {{  ssl_test.errors }}</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>Behörden Online Dienste <sup>beta</sup></h1>
+    <p>Wie gut ist meine Stadt, mein Dorf, mein Kreis im Internet aufgestellt? Welche Behördengänge kann ich auch online erledigen? Wie viel Sicherheit bietet meine Kommune dabei?</p>
+  </div>
+</div>
+<div class="container">
+  {% include 'messages.html' %}
+  <div class="row-fluid">
+    <form action="#" method="GET" id="fsrf">
+      <div class="col-md-4"><h2 id="fsr-title">Suche nach Name:</h2></div>
+      <div class="col-md-8" id="fsrb">
+        <input type="text" class="form-control" id="fsrt" />
+        <div id="fsrtl"></div>
+      </div>
+    </form>
+  </div>
+  <div class="row-fluid" style="padding-top: 30px;">
+    <div class="col-md-12"><h2>Erwähnenswert</h2></div>
+    <p>Es gibt eine Reihe guter Beispiele für vorbildliche Absicherung in Deutschland. Diese werden hier zufällig ausgewählt vorgestellt.</p>
+  </div>
+  <div class="row-fluid">
+    <div class="col-sm-2 col-rating col-rating-ssl-6">
+      <i class="fa fa-lock"></i><i class="fa fa-plus"></i>
+    </div>
+    <div class="col-md-10">
+      <h3>{{ example_host.regions[0].name }}</h3>
+      <p>Die Region <a href="/region/{{ example_host.regions[0].slug }}">{{ example_host.regions[0].name }}</a> bietet auf dem Host <a href="/host/{{ example_host.host }}">{{ example_host.host }}</a> eine vorbildliche Absicherung ihrer Dienste.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
